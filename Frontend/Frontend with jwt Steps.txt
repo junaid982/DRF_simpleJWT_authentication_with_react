@@ -69,8 +69,94 @@ Basically, we have created the different file for different use.
 
 Step : 5
 
-navigations.js
-----------------
+
+
+App.js
+--------
+
+// import logo from './logo.svg';
+import { BrowserRouter, Route, Router } from 'react-router-dom';
+import './App.css';
+import Navigations from './Components/Navigations';
+import Home from './Components/Home';
+import Login from './Components/Login';
+import Logout from './Components/Logout';
+
+import { Routes } from 'react-router-dom';
+
+function App() {
+  return (
+    <BrowserRouter>
+      <Navigations />
+      <Routes>
+        <Route exact path="/" element={<Home />} />
+
+        <Route exact path="/login" element={<Login />} />
+        <Route exact path="/logout" element={<Logout />} />
+
+      </Routes>
+    </BrowserRouter>
+  );
+}
+
+export default App;
+
+
+
+
+
+
+#==================================================================================================
+
+Step : 6
+
+
+Navigations.js
+---------------
+
+import React, { useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { useState } from 'react';
+
+export default function Navigations() {
+
+    const [IsAuth , setIsAuth] = useState(false);
+
+    useEffect( ()=>{
+        if (localStorage.getItem('access_token') !== null )
+            setIsAuth(true);
+    })
+
+    return (
+        <>
+            <nav className="navbar navbar-expand-lg navbar-light bg-light">
+                <div className="container-fluid">
+                    <a className="navbar-brand" href="/">VPnPanel</a>
+                    <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                        <span className="navbar-toggler-icon"></span>
+                    </button>
+                    <div className="collapse navbar-collapse" id="navbarSupportedContent">
+                        <ul className="navbar-nav me-auto mb-2 mb-lg-0">
+                            <li className="nav-item">
+                                {IsAuth ? <Link className="nav-link active" aria-current="page" to="/">Dashboard</Link> : null} 
+                            </li>
+                            <li className="nav-item">
+                                {IsAuth ? <Link className="nav-link" to="/">App</Link> : null}
+                            </li>
+                            
+                        </ul>
+                        <form className="d-flex">
+                        {IsAuth ? <Link className="nav-link" to="/">LogOut</Link> : <Link className="nav-link" to="/login">Login</Link>}
+                        </form>
+                    </div>
+                </div>
+            </nav>
+
+        </>
+
+    )
+}
+
 
 
 
@@ -81,15 +167,106 @@ navigations.js
 
 Step : 
 
+Login.js
+---------
+
+import React, { useState } from 'react'
+import axios from 'axios';
+
+
+
+export default function Login() {
+
+  
+  // login Logic
+
+  const [username , setUsername] = useState('');
+  const [password , setPassword] = useState('');
+
+  // get username and password
+ 
+
+  // create a submit method 
+  const submit = (e) => {
+
+    e.preventDefault();
+
+    const user = {
+      username :username , 
+      password :password,
+    }
+
+    // alert(user['username'] +'\t' +user['password'] )
+    // Create the POST requuest
+
+    axios.post('http://192.168.0.111:8000/token/' , user)
+    .then((resp) => {
+      // console.log(resp.data)
+      // Initialize the access & refresh token in localstorage.  
+      localStorage.clear()
+
+      localStorage.setItem('access_token' , resp.data.access);
+      localStorage.setItem('refresh_token' , resp.data.refresh);
+
+      
+    }).catch((err) => {
+      alert(err)
+    })
+    
+    // console.log(localStorage)
+    axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage['access_token']}`;
+    window.location.href = '/';
+
+  }
 
 
 
 
+  const ShowPass = () => {
+    let pass = document.getElementById('password');
+    if (pass.type === 'password'){
+      pass.type = 'text';
+    }
+    else{
+      
+      pass.type = 'password';
+      
+    }
+  }
 
-#==================================================================================================
 
-Step : 
+  // custom style 
+  const MyStyle = {
+    borderRadius : '15px',
+    boxShadow :"10px 8px 8px gray"
+  }
 
+  return (
+    <>
+      <div className="container my-5 pt-5 ">
+        <div className="container my-5 p-5 w-50 bg-light" style={MyStyle}>
+          <form onSubmit={submit}>
+            <div className="mb-3">
+              <label htmlFor="username" className="form-label">Email address</label>
+              <input type="text" className="form-control" id="username" required onChange={event => setUsername(event.target.value)} />
+              
+                
+            </div>
+            <div className="mb-3">
+              <label htmlFor="password" className="form-label">Password</label>
+              <input type="password" className="form-control" id="password" required onChange={event => setPassword(event.target.value)}/>
+            </div>
+            <div className="mb-3 form-check">
+              <input type="checkbox" className="form-check-input" id="showpass" onClick={ShowPass} />
+                <label className="form-check-label" htmlFor="showpass">Show Password</label>
+            </div>
+            <button type="submit" className="btn btn-primary">Login</button>
+          </form>
+        </div>
+      </div>
+    </>
+  );
+}
 
 
 

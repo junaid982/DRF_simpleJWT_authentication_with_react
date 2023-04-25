@@ -24,10 +24,26 @@ export default function Login() {
       password :password,
     }
 
-    alert(user['username'] +'\t' +user['password'] )
+    // alert(user['username'] +'\t' +user['password'] )
     // Create the POST requuest
 
-  
+    axios.post('http://192.168.0.111:8000/token/' , user)
+    .then((resp) => {
+      // console.log(resp.data)
+      // Initialize the access & refresh token in localstorage.  
+      localStorage.clear()
+
+      localStorage.setItem('access_token' , resp.data.access);
+      localStorage.setItem('refresh_token' , resp.data.refresh);
+
+      
+    }).catch((err) => {
+      alert(err)
+    })
+    
+    // console.log(localStorage)
+    axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage['access_token']}`;
+    window.location.href = '/';
 
   }
 
