@@ -1,0 +1,351 @@
+# Django rest Framework Jwt Authentication Backend
+
+https://medium.com/@ronakchitlangya1997/jwt-authentication-with-react-js-and-django-c034aae1e60d
+
+
+
+#==================================================================================================
+
+Step : create virtualenv 
+
+>>> python -m venv env
+
+
+Activate 
+
+>>> env\scripts\activate
+
+
+
+
+#==================================================================================================
+
+Step : 2
+
+Install Dependencies
+
+
+>>> pip install django
+>>> pip install djangorestframework
+>>> pip install djangorestframework-simplejwt
+>>> pip install django-cors-headers
+
+
+
+#==================================================================================================
+
+Step : 3 
+
+create django project 
+
+
+>>> django-admin startproject backend
+
+>>> cd backend
+
+#==================================================================================================
+
+Step : 4
+
+create application 
+
+>>> python manage.py startapp authentication
+
+
+
+
+#==================================================================================================
+
+Step : 5
+
+install application 
+
+INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'authentication',
+    'corsheaders',
+    'rest_framework',
+    'rest_framework_simplejwt.token_blacklist',
+]
+
+
+
+
+
+#==================================================================================================
+
+Step : 6
+
+add coreheaders configurations in settings.py
+
+
+CORS_ORIGIN_ALLOW_ALL = True
+
+MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
+    ...........
+]
+
+
+
+
+
+#==================================================================================================
+
+Step : 7
+
+import 
+
+from datetime import timedelta
+and 
+Add jwt configuration in settings.py
+
+
+REST_FRAMEWORK = {
+     'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+      ],
+}
+
+
+SIMPLE_JWT = {
+     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
+     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+     'ROTATE_REFRESH_TOKENS': True,
+     'BLACKLIST_AFTER_ROTATION': True
+}
+
+
+
+
+#==================================================================================================
+
+Step : 8
+
+add the urls of token and refresh token inside projects urls 
+
+project/urls.py
+---------------
+
+from django.contrib import admin
+from django.urls import path , include
+from rest_framework_simplejwt import views as jwt_views
+
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('token/', jwt_views.TokenObtainPairView.as_view(), name ='token_obtain_pair'),
+    path('token/refresh/', jwt_views.TokenRefreshView.as_view(), name ='token_refresh'),
+
+]
+
+
+#==================================================================================================
+
+Step : 9
+
+
+>>> python manage.py makemigrations
+>>> python manage.py migrate
+>>> python manage.py createsuperuser
+
+>>>python manage.py runserver
+
+
+
+#==================================================================================================
+
+Step : 10
+
+Check the endpoints 
+
+
+http://localhost:8000/token/
+
+Fill this form with your created username and password, you should see the access and refresh token.
+
+
+http://localhost:8000/token/refresh/
+
+Fill this form with Refresh Token, you should see the new access and refresh token.
+
+#==================================================================================================
+
+Step : 11
+
+Now, we will create the views for testing
+
+
+views.py
+-----------
+
+
+from django.shortcuts import render
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from rest_framework.permissions import IsAuthenticated
+
+
+
+# Create your views here.
+
+class HomeView(APIView):
+    permission_classes = (IsAuthenticated,)
+
+    def get(self , request):
+        resp = {
+            "message":"Welcome to the django jwt authentication page "
+        }
+
+        return Response(resp)
+    
+
+
+
+
+#==================================================================================================
+
+Step : 12
+
+
+create urls.py inside application 
+
+
+application/urls.py
+-------------------
+
+from django.urls import path
+from . import views
+
+
+urlpatterns = [
+    path('' , views.HomeView.as_view() , name='home'),
+]
+
+
+#  include inside project urls
+
+
+backend/urls.py
+---------------
+
+from django.contrib import admin
+from django.urls import path , include
+from rest_framework_simplejwt import views as jwt_views
+
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('token/', jwt_views.TokenObtainPairView.as_view(), name ='token_obtain_pair'),
+    path('token/refresh/', jwt_views.TokenRefreshView.as_view(), name ='token_refresh'),
+    path('' , include('authentication.urls')),
+
+]
+
+
+
+
+
+#==================================================================================================
+
+Step : 13
+
+open browser and hit this urls 
+
+http://localhost:8000/token/
+
+fill login details and post 
+
+it will return refresh token and access token
+
+Copy access token 
+
+eg
+
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjgyNDA0MDU0LCJpYXQiOjE2ODI0MDM0NTQsImp0aSI6ImYyY2I5ZTRiNmYwZDRmZWJhZmI5OGQ4YTkzZTliOWQ5IiwidXNlcl9pZCI6MX0.ylXyay0PG2BL-F-AnwvWnc2bvMR-D357phCzREFg-tc
+
+
+
+Open Postman and chek the response 
+
+we have to click on Authorization button and set the token type is Bearer Token and paste the access token. 
+ 
+http://localhost:8000/home/
+
+
+
+
+
+#==================================================================================================
+
+Step : 14
+
+we have to add the logout functionality because we all know access token is valid for some time
+
+
+views.py 
+---------
+
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import status
+
+
+class LogoutView(APIView):
+
+    permission_classes = (IsAuthenticated , )
+
+    def post(self , request):
+        try:
+            refresh_token = request.data['refresh_token']
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+
+            return Response(status = status.HTTP_205_RESET_CONTENT)
+
+        except:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
+
+
+#==================================================================================================
+
+Step : 15
+
+Add logout urls
+
+from django.urls import path
+from . import views
+
+
+urlpatterns = [
+    path('home/' , views.HomeView.as_view() , name='home'),
+    path('logout/' , views.LogoutView.as_view() , name='logout'),
+]
+
+
+
+
+#==================================================================================================
+
+Step : 16
+
+By using that URL http://localhost:8000/logout/, 
+
+we can invalid the refresh token and add token into blacklist. 
+By using Postman we can hit this URL with POST request and pass the access token 
+in authorization and refresh token in body.
+
+
+
+
+
+
+
