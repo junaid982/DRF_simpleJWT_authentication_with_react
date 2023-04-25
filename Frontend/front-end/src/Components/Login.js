@@ -24,10 +24,10 @@ export default function Login() {
       password :password,
     }
 
+    alert(user['username'] +'\t' +user['password'] )
     // Create the POST requuest
 
-    
-    
+  
 
   }
 
@@ -60,13 +60,13 @@ export default function Login() {
           <form onSubmit={submit}>
             <div className="mb-3">
               <label htmlFor="username" className="form-label">Email address</label>
-              <input type="text" className="form-control" id="username" />
+              <input type="text" className="form-control" id="username" required onChange={event => setUsername(event.target.value)} />
               
                 
             </div>
             <div className="mb-3">
               <label htmlFor="password" className="form-label">Password</label>
-              <input type="password" className="form-control" id="password" />
+              <input type="password" className="form-control" id="password" required onChange={event => setPassword(event.target.value)}/>
             </div>
             <div className="mb-3 form-check">
               <input type="checkbox" className="form-check-input" id="showpass" onClick={ShowPass} />
