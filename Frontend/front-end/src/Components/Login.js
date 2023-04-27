@@ -84,7 +84,7 @@ export default function Login() {
             <input type="checkbox" className="form-check-input" id="showpass" onClick={ShowPass} />
             <label className="form-check-label" htmlFor="showpass">Show password</label>
           </div>
-          <button type="submit" className="btn btn-primary" >Login</button>
+          <button type="submit" className="btn btn-primary w-100" >Login</button>
         </form>
 
       </div >
