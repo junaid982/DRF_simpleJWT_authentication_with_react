@@ -13,7 +13,7 @@ Create the react app.
 
 open cmd 
 
->>> npx create-react-app frontend
+>>> npx create-react-app front-end
 
 
 >>> cd frontend
@@ -26,8 +26,6 @@ Step : 2
 
 // Install the packages.
 
->>> npm i bootstrap
->>> npm i axios
 >>> npm i react-router-dom
 
 
@@ -44,6 +42,13 @@ if any errors
 >>> set NODE_OPTIONS=--openssl-legacy-provider
 
 
+Add Bootstrap Cdn Link inside 
+
+public/Index.html
+------------------
+
+
+
 
 
 #==================================================================================================
@@ -53,12 +58,14 @@ Step : 4
 After run the server successfully, 
 we move further to design the application. So first, we will create the component folder inside the src folder.
 
-After create the component folder in src we will create the 
+After create the Components folder in src we will create the 
 
-login.js
-logout.js
-navigation.js
-home.js 
+Home.js 
+Navigation.js
+Login.js
+Logout.js
+
+
 
 Basically, we have created the different file for different use.
 
@@ -68,6 +75,10 @@ Basically, we have created the different file for different use.
 #==================================================================================================
 
 Step : 5
+
+import all component inside App.js
+
+wrap all routs inside BrowserRouter
 
 
 
