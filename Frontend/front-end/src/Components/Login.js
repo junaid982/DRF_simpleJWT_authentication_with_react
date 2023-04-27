@@ -1,6 +1,7 @@
 import React from 'react'
 
 import { useState } from 'react';
+import axios from 'axios';
 
 
 export default function Login() {
@@ -24,7 +25,7 @@ export default function Login() {
 
   // when user submit this method call 
 
-  const submit = (e) => {
+  const submit = async (e) => {
 
     e.preventDefault()
 
@@ -35,8 +36,11 @@ export default function Login() {
     }
     console.log(user)
 
-    // Create the POST requuest
-    
+    // Create the POST request
+    const resp = await axios.post('http://64.227.146.222/token/', user)
+    console.log(resp.data)
+
+
 
 }
 
