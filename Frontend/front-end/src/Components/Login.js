@@ -2,9 +2,14 @@ import React from 'react'
 
 import { useState } from 'react';
 import axios from 'axios';
-
+// import {isAuth,setIsAuth} from './Navbar';
 
 export default function Login() {
+
+  // to prevent display auth user 
+  if (localStorage.getItem('access_token') !== null){
+    window.location.href = '/';
+  }
 
   // set default username password value 
   const [username, setUsername] = useState('');
@@ -16,6 +21,8 @@ export default function Login() {
     const pass = document.getElementById('password');
     if (pass.type === 'password') {
       pass.type = 'text'
+      // console.log('isAuth :',isAuth)
+      // setIsAuth(true)
     }
     else {
       pass.type = 'password'
