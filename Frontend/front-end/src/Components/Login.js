@@ -38,15 +38,15 @@ export default function Login() {
 
     // Create the POST request
     try {
-      const resp = await axios.post('http://64.227.146.222/token/', user)
+      const resp = await axios.post('http://127.0.0.1:8000/token/', user)
       let tokenObj = resp.data
-      // console.log(tokenObj)
+      console.log(tokenObj)
 
       // initialize the access and refresh token in localstorage 
       localStorage.clear();
       localStorage.setItem('access_token', tokenObj.access);
       localStorage.setItem('refresh_token', tokenObj.refresh);
-      // console.log(localStorage)
+      console.log(localStorage)
 
       axios.defaults.headers.common['Authorization'] = `Bearer ${tokenObj['access']}`;
       window.location.href = '/'
