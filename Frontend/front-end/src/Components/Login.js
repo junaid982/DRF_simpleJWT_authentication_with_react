@@ -38,8 +38,8 @@ export default function Login() {
 
     // Create the POST request
     try {
-      const resp = await axios.post('http://127.0.0.1:8000/token/', user)
-      let tokenObj = resp.data
+      const resp12 = await axios.post('http://127.0.0.1:8000/token/', user)
+      let tokenObj = resp12.data
       console.log(tokenObj)
 
       // initialize the access and refresh token in localstorage 
