@@ -1,37 +1,43 @@
-import React from 'react'
-import { useState, useEffect } from 'react';
+import React from 'react';
 import axios from 'axios';
-
+import { useState, useEffect } from 'react';
 
 export default function Home() {
-  // console.log(localStorage)
   // localStorage.clear()
   const [message, setMessage] = useState('');
+
   useEffect(() => {
     if (localStorage.getItem('access_token') === null) {
       window.location.href = '/login'
-    }
-    else {
+    } else {
+
       (async () => {
+
         try {
-          const { data } = await axios.get(
-            'http://localhost:8000/home/', {
-              headers: {
-                'Authorization': 'Bearer ' + localStorage.getItem('access_token'),
-                'Content-Type': 'application/json',
-                'accept': 'application/json'
-                }
-          }
-          );
-          setMessage(data.message);
+          const { data } = await axios.get('http://localhost:8000/home/', {headers: {
+                                                                              Authorization :'Bearer '+localStorage.getItem('access_token'),
+                                                                              'Content-Type': 'application/json',
+                                                                              'Accept':'application/json'
+                                                                            }
+                                                                          }
+                                            );
+          
+        setMessage(data.message);
+
         } catch (e) {
           console.log('not auth')
+          alert('Authentication Fail.')
         }
-      })()
-    };
-  }, []);
-  return
-  <div className="form-signin mt-5 text-center">
-    <h3>Hi {message}</h3>
-  </div>
+      })()}
+
+
+  }, [])
+
+
+
+  return (
+    <div>
+      <h3>{message}</h3>
+    </div>
+  )
 }
